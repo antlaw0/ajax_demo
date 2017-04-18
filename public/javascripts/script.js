@@ -46,16 +46,16 @@ function addPlacesToPage(places) {
 
 function addPlace(place, parent) {
 
-  var html = '<div _id="' + place._id + '"><span class="placename">' + place.name + '</span><label class="visited_label" for="' + place._id + '_is_visited">Visited?</label>';
+  var html = '<div id="' + place._id + '"><span class="placename">' + place.name + '</span><label class="visited_label" for="' + place._id + '_is_visited">Visited?</label>';
 
   if (place.visited) {
-    html += '<span class="controls"><input class="visited" _id="' + place._id + '_is_visited" type="checkbox" checked />'
+    html += '<span class="controls"><input class="visited" id="' + place._id + '_is_visited" type="checkbox" checked />'
   }
   else {
-    html += '<span class="controls"><input class="visited" _id="' + place._id + '_is_visited" type="checkbox"/>'
+    html += '<span class="controls"><input class="visited" id="' + place._id + '_is_visited" type="checkbox"/>'
   }
 
-  html += '<button _id="'+ place._id +'_delete" class="delete">Delete?</button></span></div>';
+  html += '<button id="'+ place._id +'_delete" class="delete">Delete?</button></span></div>';
 
   parent.append(html);
 }
@@ -65,7 +65,7 @@ function addPlace(place, parent) {
 function deleteListener() {
 
   $(this).text('Deleting...');              // Change button text to 'deleting...' Visual feedback for slower connections.
-  var elem_id = $(this).attr('_id');         // Get the _id of the element clicked, expected to be in the format '4_delete' for place _id 4
+  var elem_id = $(this).attr('id');         // Get the id of the element clicked, expected to be in the format '4_delete' for place _id 4
   var _id = elem_id.replace('_delete', '');  // Cut off the _delete part, left with the number _id
   deletePlace(_id);                          // Make AJAX request to delete the place with this _ID
 }
@@ -74,7 +74,7 @@ function deleteListener() {
 function checkListener() {
   //todo feedback on updated?
   var visited = $(this).is(':checked');   // Is the checkbox checked or unchecked?
-  var elem_id = $(this).attr('_id');             // Get the checkbox _id. For place with _id 4, the _id will be 4_visited
+  var elem_id = $(this).attr('id');             // Get the checkbox id. For place with _id 4, the _id will be 4_visited
   var _id = elem_id.replace('_is_visited', '');   // Remove the _is_visited part
   updateVisited(_id, visited);                    // make AJAX request to update the place with this _ID to the new visited state.
 }
@@ -105,7 +105,7 @@ function addNewPlace(placename){
   $.ajax({
     method:"POST",
     url:"/add",
-    
+
 	data: { "name" : placename }
   }).done(function(data){
 if (data.key == true)
@@ -125,7 +125,7 @@ if (data.key == true)
     $(new_checkbox_id).click(checkListener);
     $(new_delete_id).click(deleteListener);
 }
-else//already exists, 
+else//already exists,
 {
 	alert("This place already exists");
 }
@@ -155,14 +155,17 @@ function updateVisited(_id, visited) {
 
 function deletePlace(_id) {
 
+
+  console.log('delete', _id)
   $.ajax({
     method: "DELETE",
     url: "/delete",
     data: { '_id': _id }
   }).done(function (data) {
-    console.log('DELETE complete');
+    console.log('DELETE complete', data);
     // Select div containing this item, and remove from page
     var selector_id = '#' + data._id + "";
+    console.log(selector_id)
     $(selector_id).fadeOut(function(){
       $(this).remove();
     });
@@ -171,4 +174,3 @@ function deletePlace(_id) {
     console.log(error);
   });
 }
-
