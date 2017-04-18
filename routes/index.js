@@ -1,4 +1,6 @@
 var express = require('express');
+var ObjectID = require('mongodb').ObjectID;
+
 var router = express.Router();
 var places;
 var counter=1;
@@ -93,12 +95,22 @@ router.put('/update', function(req, res){
 router.delete('/delete', function(req, res){
 
   var place_id = req.body._id;
-  
-req.db.collection('places').deleteOne({id: place_id}, function(err){
+
+  object_id = new ObjectID(place_id)
+
+req.db.collection('places').deleteOne({_id: object_id }, function(err){
+
+console.log('callback')
+  if (err) {
+    console.log(err);
+    return next(err); //or deal with error however you think fit
+  }
+
   console.log("Place deleted: "+place_id);
   console.log('After DELETE, the places list is');
   console.log(places);
 
+  res.json({_id : place_id})  // Return JSON with the _id of the deleted place, so the client AJAX call knows what was deleted
   res.status(200);
   res.end();
 });
