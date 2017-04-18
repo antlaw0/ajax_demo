@@ -93,12 +93,13 @@ router.put('/update', function(req, res){
 router.delete('/delete', function(req, res){
 
   var place_id = req.body._id;
-  
+
 req.db.collection('places').deleteOne({id: place_id}, function(err){
   console.log("Place deleted: "+place_id);
   console.log('After DELETE, the places list is');
   console.log(places);
 
+  res.json({_id : place_id})  // Return JSON with the _id of the deleted place, so the client AJAX call knows what was deleted 
   res.status(200);
   res.end();
 });
